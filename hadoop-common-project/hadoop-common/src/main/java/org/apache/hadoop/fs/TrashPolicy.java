@@ -146,18 +146,17 @@ public abstract class TrashPolicy extends Configured {
   }
 
   /**
-   * Get an instance of the configured TrashPolicy based on the value
-   * of the configuration parameter fs.trash.classname.
+   * Get an instance of the TrashPolicy associated with the FileSystem implementation of
+   * {@link FileSystem#getTrashPolicy(Configuration)}. The configuration passed might be used
+   * by the FileSystem implementation to pick the {@link TrashPolicy} implementation. The default
+   * {@link FileSystem#getTrashPolicy(Configuration)} checks fs.trash.classname to pick the
+   * {@link TrashPolicy} implementation.
    *
    * @param conf the configuration to be used
    * @param fs the file system to be used
    * @return an instance of TrashPolicy
    */
   public static TrashPolicy getInstance(Configuration conf, FileSystem fs) {
-    Class<? extends TrashPolicy> trashClass = conf.getClass(
-        "fs.trash.classname", TrashPolicyDefault.class, TrashPolicy.class);
-    TrashPolicy trash = ReflectionUtils.newInstance(trashClass, conf);
-    trash.initialize(conf, fs); // initialize TrashPolicy
-    return trash;
+    return fs.getTrashPolicy(conf);
   }
 }
